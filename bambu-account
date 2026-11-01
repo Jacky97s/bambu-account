@@ -2,6 +2,11 @@
 # Switch Bambu Studio login by swapping its token file (BambuNetworkEngine.conf).
 set -euo pipefail
 
+if [[ $(uname -s) != Darwin ]]; then
+  echo "bambu-account supports macOS only. See https://github.com/Jacky97s/bambu-account#contributing" >&2
+  exit 1
+fi
+
 DIR="${BAMBU_STUDIO_DIR:-$HOME/Library/Application Support/BambuStudio}"
 CONF="$DIR/BambuNetworkEngine.conf"
 STORE="${BAMBU_ACCOUNT_STORE:-$HOME/.bambu-accounts}"

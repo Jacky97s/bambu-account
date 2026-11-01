@@ -8,7 +8,25 @@ Bambu Studio keeps its login in one encrypted token file,
 accounts takes one command instead of logging out and in again. It also works
 when the in-app **Log out** button does nothing.
 
-## Install
+> [!WARNING]
+> **macOS only.** Windows and Linux are not supported or tested, and the
+> script exits with an error there. Contributions are welcome, see
+> [Contributing](#contributing).
+
+## AI agent skill
+
+Install the skill into your AI coding agent (Claude Code, Cursor, Codex and
+others) with [skills](https://github.com/vercel-labs/skills):
+
+```sh
+npx skills add Jacky97s/bambu-account
+```
+
+Then just ask, e.g. "switch Bambu Studio to my home account". The agent
+installs the `bambu-account` CLI itself if it's missing, and asks you to quit
+Bambu Studio when needed.
+
+## Manual install
 
 ```sh
 mkdir -p ~/.local/bin
@@ -45,23 +63,19 @@ Every `use` and `logout` first backs up the current login as `_last`, so
 - A saved token can expire; if Bambu Studio asks you to log in again, log in
   and run `bambu-account save <name>` again.
 - Bambu Connect keeps its own login and is not affected.
-- macOS only. Not affiliated with Bambu Lab.
-
-## AI agent skill
-
-Install the skill into your AI coding agent (Claude Code, Cursor, Codex and
-others) with [skills](https://github.com/vercel-labs/skills):
-
-```sh
-npx skills add Jacky97s/bambu-account
-```
-
-Then just ask, e.g. "switch Bambu Studio to my home account". The agent
-installs the `bambu-account` CLI itself if it's missing, and asks you to quit
-Bambu Studio when needed.
+- macOS only (see [Contributing](#contributing)). Not affiliated with Bambu Lab.
 
 ## Test
 
 ```sh
 ./test.sh   # runs against a temp dir, never touches your real config
 ```
+
+## Contributing
+
+Windows and Linux support is welcome. Bambu Studio's config folder is
+`%APPDATA%\BambuStudio` on Windows and usually `~/.config/BambuStudio` on
+Linux (`~/.var/app/com.bambulab.BambuStudio/config/BambuStudio` for Flatpak),
+but whether the login lives in `BambuNetworkEngine.conf` there too hasn't
+been verified. If you can test on those platforms, please open a pull request
+with the change and the result of `./test.sh` (or an equivalent test).

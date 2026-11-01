@@ -8,7 +8,11 @@ description: Switch, save, list, or log out Bambu Lab accounts in Bambu Studio o
 Bambu Studio stores its login in one encrypted token file,
 `~/Library/Application Support/BambuStudio/BambuNetworkEngine.conf`.
 `bambu-account` saves that file per account under `~/.bambu-accounts/<name>/`
-and swaps it back in. macOS only.
+and swaps it back in.
+
+**macOS only.** If `uname -s` isn't `Darwin`, stop and tell the user it isn't
+supported yet; don't adapt it to Windows or Linux on your own, since the login
+file location there hasn't been verified.
 
 ## Install
 
