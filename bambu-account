@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Switch Bambu Studio login by swapping its token file (BambuNetworkEngine.conf).
+set -euo pipefail
+
+DIR="${BAMBU_STUDIO_DIR:-$HOME/Library/Application Support/BambuStudio}"
+CONF="$DIR/BambuNetworkEngine.conf"
+STORE="${BAMBU_ACCOUNT_STORE:-$HOME/.bambu-accounts}"
+PROC="${BAMBU_STUDIO_PROC:-BambuStudio}"
+
+usage() {
+  cat <<EOF
+Usage: bambu-account <command> [name]
+  save <name>   back up the current login as <name>
+  use <name>    switch to the saved login <name> (current one is saved as _last)
+  logout        back up current login as _last and log out
+  list          list saved logins
+
+Quit Bambu Studio before 'use' or 'logout'.
+EOF
+  exit 1
+}
+
+require_closed() {
+  if pgrep -x "$PROC" >/dev/null; then
+    echo "Bambu Studio is running. Quit it (Cmd+Q) first." >&2
+    exit 1
+  fi
+}
+
+backup_current() {
+  [[ -f "$CONF" ]] || return 0
+  mkdir -p "$STORE/$1"
+  chmod 700 "$STORE"
+  cp -p "$CONF" "$STORE/$1/"
+}
+
+cmd=${1:-}
+name=${2:-}
+case $cmd in
+  save)
+    [[ -n $name ]] || usage
+    [[ -f "$CONF" ]] || { echo "Not logged in: $CONF not found" >&2; exit 1; }
+    backup_current "$name"
+    echo "Saved current login as '$name'"
+    ;;
+  use)
+    [[ -n $name ]] || usage
+    [[ -f "$STORE/$name/BambuNetworkEngine.conf" ]] || { echo "No saved login '$name'" >&2; exit 1; }
+    require_closed
+    backup_current _last
+    cp -p "$STORE/$name/BambuNetworkEngine.conf" "$CONF"
+    echo "Switched to '$name'. Open Bambu Studio."
+    ;;
+  logout)
+    require_closed
+    backup_current _last
+    rm -f "$CONF"
+    echo "Logged out (previous login saved as '_last'). Open Bambu Studio and log in."
+    ;;
+  list)
+    ls -1 "$STORE" 2>/dev/null || true
+    ;;
+  *) usage ;;
+esac
